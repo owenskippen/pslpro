@@ -4,8 +4,6 @@ import { FEATURE_LABELS, featureTone, pslTone } from "./lib/scoreColors";
 import type { PSLResult } from "./types/psl";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
-
 function dataUrlToParts(dataUrl: string): { mimeType: string; base64: string } | null {
   const m = /^data:([^;]+);base64,(.+)$/.exec(dataUrl);
   if (!m) return null;
@@ -91,10 +89,6 @@ export default function App() {
   };
 
   const runAnalysis = async () => {
-    if (!GEMINI_API_KEY.trim()) {
-      setError("Gemini API key not configured. Fill in your .env file.");
-      return;
-    }
     if (!imageDataUrl) {
       setError("Add a photo first (upload or camera).");
       return;
@@ -108,7 +102,7 @@ export default function App() {
     setError(null);
     setResult(null);
     try {
-      const outcome = await analyzeFace(GEMINI_API_KEY.trim(), parts.mimeType, parts.base64);
+      const outcome = await analyzeFace(parts.mimeType, parts.base64);
       if (!outcome.ok) {
         setError(
           outcome.message?.trim()
