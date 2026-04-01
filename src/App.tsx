@@ -4,7 +4,7 @@ import { FEATURE_LABELS, featureTone, pslTone } from "./lib/scoreColors";
 import type { PSLResult } from "./types/psl";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 
-const STORAGE_KEY = "pslpro_gemini_api_key";
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 
 function dataUrlToParts(dataUrl: string): { mimeType: string; base64: string } | null {
   const m = /^data:([^;]+);base64,(.+)$/.exec(dataUrl);
@@ -13,7 +13,6 @@ function dataUrlToParts(dataUrl: string): { mimeType: string; base64: string } |
 }
 
 export default function App() {
-  const [apiKey, setApiKey] = useState("");
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,23 +21,6 @@ export default function App() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setApiKey(saved);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      if (apiKey) localStorage.setItem(STORAGE_KEY, apiKey);
-    } catch {
-      /* ignore */
-    }
-  }, [apiKey]);
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -109,8 +91,8 @@ export default function App() {
   };
 
   const runAnalysis = async () => {
-    if (!apiKey.trim()) {
-      setError("Enter your Google Gemini API key.");
+    if (!GEMINI_API_KEY.trim()) {
+      setError("Gemini API key not configured. Fill in your .env file.");
       return;
     }
     if (!imageDataUrl) {
@@ -126,7 +108,7 @@ export default function App() {
     setError(null);
     setResult(null);
     try {
-      const outcome = await analyzeFace(apiKey.trim(), parts.mimeType, parts.base64);
+      const outcome = await analyzeFace(GEMINI_API_KEY.trim(), parts.mimeType, parts.base64);
       if (!outcome.ok) {
         setError(
           outcome.message?.trim()
@@ -154,21 +136,6 @@ export default function App() {
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">pslpro</h1>
           <p className="mt-1 text-sm text-zinc-500">PSL facial analysis — diagnostic report</p>
         </header>
-
-        <section className="mb-8 space-y-3 rounded-lg border border-zinc-800 bg-zinc-950/50 p-4 sm:p-5">
-          <label htmlFor="api-key" className="block text-xs font-medium uppercase tracking-wider text-zinc-500">
-            Gemini API key
-          </label>
-          <input
-            id="api-key"
-            type="password"
-            autoComplete="off"
-            placeholder="Paste key — stored locally in this browser"
-            className="w-full rounded border border-zinc-700 bg-[#0a0a0a] px-3 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-          />
-        </section>
 
         <section className="mb-8 space-y-4 rounded-lg border border-zinc-800 bg-zinc-950/50 p-4 sm:p-5">
           <h2 className="text-xs font-medium uppercase tracking-wider text-zinc-500">Image</h2>
