@@ -1,9 +1,26 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { parseGeminiJson, SYSTEM_PROMPT } from "./src/types/psl";
 import type { Plugin, Connect } from "vite";
+import * as fs from "fs";
+import * as path from "path";
+
+// Load .env.development.local manually for the config
+const envPath = path.resolve(process.cwd(), ".env.development.local");
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, "utf-8");
+  envContent.split("\n").forEach((line) => {
+    const [key, ...valueParts] = line.split("=");
+    if (key && valueParts.length > 0) {
+      const value = valueParts.join("=").trim();
+      if (!process.env[key.trim()]) {
+        process.env[key.trim()] = value;
+      }
+    }
+  });
+}
 
 function apiPlugin(): Plugin {
   return {
@@ -35,6 +52,7 @@ function apiPlugin(): Plugin {
             }
 
             const apiKey = process.env.GEMINI_API_KEY;
+            console.log("[v0] API Key exists:", !!apiKey, "Key length:", apiKey?.length);
             if (!apiKey) {
               res.statusCode = 500;
               res.setHeader("Content-Type", "application/json");
