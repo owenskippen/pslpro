@@ -1,0 +1,1 @@
+[?1049h[22;0;0t[1;12r(B[m[4l[?7h[39;49m]4;8;rgb:54/54/54\]4;9;rgb:FF/54/54\]4;10;rgb:54/FF/54\]4;11;rgb:FF/FF/54\]4;12;rgb:54/54/FF\]4;13;rgb:FF/54/FF\]4;14;rgb:54/FF/FF\[39;49m(B[m[H[2JEvery 2.0s: server.ts[1;101HOwenLabtop: Wed Apr  1 18:25:41 2026[3;1Hsh: 1: server.ts: Permission denied[12;136H(B[m[39;49m]104[12;1H[?1049l[23;0;0t[?1l>

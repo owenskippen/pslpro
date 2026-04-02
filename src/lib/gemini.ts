@@ -20,7 +20,18 @@ export async function analyzeFace(
   });
 
   if (!response.ok) {
-    throw new Error(`API error: ${response.statusText}`);
+    let errorMessage = `API error: ${response.status}`; 
+    try {
+      const errorData = await response.json();
+      if (errorData.error) {
+        errorMessage += ` - ${errorData.error}`;
+      } else if (errorData.message) {
+        errorMessage += ` - ${errorData.message}`;
+      }
+    } catch {
+      errorMessage += ` ${response.statusText}`;
+    }
+    throw new Error(errorMessage);
   }
 
   const result = await response.json();
