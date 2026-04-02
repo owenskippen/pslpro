@@ -1,4 +1,4 @@
-import { parseGeminiJson, type PSLResult } from "../types/psl";
+import { type PSLResult } from "../types/psl";
 
 export type AnalyzeOutcome = { ok: true; data: PSLResult } | { ok: false; kind: "no_face"; message?: string };
 
