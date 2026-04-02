@@ -2,7 +2,7 @@ import { parseGeminiJson, type PSLResult } from "../types/psl";
 
 export type AnalyzeOutcome = { ok: true; data: PSLResult } | { ok: false; kind: "no_face"; message?: string };
 
-const API_BASE = import.meta.env.DEV ? "http://localhost:3000" : window.location.origin;
+const API_BASE = "";
 
 export async function analyzeFace(
   mimeType: string,
